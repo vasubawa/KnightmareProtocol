@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { CopilotKit } from "@copilotkit/react-core";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import "@copilotkit/react-ui/styles.css";
 
