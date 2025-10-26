@@ -1,0 +1,42 @@
+[
+  {
+    "id": "2025-10-26T10:41:29.109802",
+    "title": "Test",
+    "message": "Test message",
+    "priority": "normal",
+    "timestamp": "2025-10-26T10:41:29.109812",
+    "read": false
+  },
+  {
+    "id": "2025-10-26T10:43:27.746964",
+    "title": "Meeting Reminder",
+    "message": "Team meeting in 30 minutes",
+    "priority": "high",
+    "timestamp": "2025-10-26T10:43:27.746979",
+    "read": false
+  },
+  {
+    "id": "2025-10-26T10:43:27.748172",
+    "title": "Task Complete",
+    "message": "Code review finished",
+    "priority": "normal",
+    "timestamp": "2025-10-26T10:43:27.748180",
+    "read": false
+  },
+  {
+    "id": "2025-10-26T10:43:27.748839",
+    "title": "FYI",
+    "message": "New documentation available",
+    "priority": "low",
+    "timestamp": "2025-10-26T10:43:27.748845",
+    "read": false
+  },
+  {
+    "id": "2025-10-26T10:46:01.016287",
+    "title": "Test",
+    "message": "Test message",
+    "priority": "normal",
+    "timestamp": "2025-10-26T10:46:01.016322",
+    "read": false
+  }
+]

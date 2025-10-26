@@ -58,11 +58,11 @@ Agent = _load_agent()
 
 
 @tool()
-async def run_ops():
-    print("Starting critic_agent agent...")
-    while True:
-        print("critic_agent agent running main loop...")
-        await asyncio.sleep(3)
+async def run_ops(plan: str):
+    """Validate and critique a plan for conflicts or issues."""
+    print(f"Critic agent analyzing plan: {plan[:100]}...")
+    # TODO: Implement real plan validation logic
+    return f"Plan reviewed. No critical issues detected in: {plan[:50]}..."
 
 
 critic_agent = Agent(

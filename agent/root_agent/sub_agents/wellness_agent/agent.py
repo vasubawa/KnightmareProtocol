@@ -58,11 +58,17 @@ Agent = _load_agent()
 
 
 @tool()
-async def run_ops():
-    print("Starting wellness_agent agent...")
-    while True:
-        print("wellness_agent agent running main loop...")
-        await asyncio.sleep(3)
+async def run_ops(activity_type: str = "general"):
+    """Suggest wellness activities and self-care recommendations."""
+    suggestions = {
+        "general": "Take a 5-minute break, stretch, and hydrate.",
+        "break": "Step away from your screen, do some light stretching, and take deep breaths.",
+        "exercise": "Consider a 10-minute walk or quick workout session.",
+        "mindfulness": "Try a 2-minute breathing exercise or brief meditation."
+    }
+    suggestion = suggestions.get(activity_type, suggestions["general"])
+    print(f"Wellness agent suggests: {suggestion}")
+    return f"Wellness recommendation: {suggestion}"
 
 
 wellness_agent = Agent(

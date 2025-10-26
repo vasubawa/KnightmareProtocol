@@ -59,10 +59,10 @@ Agent = _load_agent()
 
 @tool()
 async def run_ops():
-    print("Starting calendar_agent agent...")
-    while True:
-        print("calendar_agent agent running main loop...")
-        await asyncio.sleep(3)
+    """Background operations for calendar agent (currently placeholder)."""
+    print("Calendar agent operations running...")
+    # TODO: Implement calendar sync, event polling, etc.
+    return "Calendar agent ready"
 
 
 calendar_agent = Agent(

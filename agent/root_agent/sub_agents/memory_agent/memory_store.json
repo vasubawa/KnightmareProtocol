@@ -1,5 +1,11 @@
 {
   "user123": {
-    "favorite_coffee_shop": "Starbucks Downtown"
+    "favorite_coffee_shop": "Starbucks Downtown",
+    "favorite_city": "Orlando",
+    "preferred_email_time": "9:00 AM",
+    "theme": "dark"
+  },
+  "test_user": {
+    "test_key": "test_value"
   }
 }

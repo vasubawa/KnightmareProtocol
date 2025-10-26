@@ -91,9 +91,9 @@ async def get_preference(user_id: str, key: str):
 # ---------- Background Loop ----------
 @tool()
 async def run_ops():
-    print("Memory agent running background loop...")
-    while True:
-        await asyncio.sleep(5)
+    """Background operations for memory agent (currently placeholder)."""
+    print("Memory agent ready...")
+    return "Memory agent operational"
 
 # ---------- Root Agent ----------
 memory_agent = Agent(

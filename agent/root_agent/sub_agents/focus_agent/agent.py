@@ -58,11 +58,11 @@ Agent = _load_agent()
 
 
 @tool()
-async def run_ops():
-    print("Starting focus_agent agent...")
-    while True:
-        print("focus_agent agent running main loop...")
-        await asyncio.sleep(3)
+async def run_ops(task: str, duration_minutes: int = 25):
+    """Start a focus session for the given task."""
+    print(f"Focus agent: Starting {duration_minutes}-minute focus session for: {task}")
+    # TODO: Implement focus timer, notifications, break reminders
+    return f"Focus session started for '{task}' ({duration_minutes} minutes)"
 
 
 focus_agent = Agent(

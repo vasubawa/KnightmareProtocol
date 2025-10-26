@@ -37,18 +37,18 @@ def _load_agent(module_path: str, agent_name: str):
         print(f"Warning: Could not load {agent_name} from {module_path}: {e}")
         return None
 
-# Load all sub-agents
-calendar_agent = _load_agent(".calendar_agent.agent", "calendar_agent")
-flight_agent = _load_agent(".flight_agent.agent", "flight_agent")
-commute_agent = _load_agent(".commute_agent.agent", "commute_agent")
-planner_agent = _load_agent(".planner_agent.agent", "planner_agent")
-notification_agent = _load_agent(".notification_agent.agent", "notification_agent")
-critic_agent = _load_agent(".critic_agent.agent", "critic_agent")
-email_agent = _load_agent(".email_agent.agent", "email_agent")
-focus_agent = _load_agent(".focus_agent.agent", "focus_agent")
-knowledge_agent = _load_agent(".knowledge_agent.agent", "knowledge_agent")
-memory_agent = _load_agent(".memory_agent.agent", "memory_agent")
-wellness_agent = _load_agent(".wellness_agent.agent", "wellness_agent")
+# Load all sub-agents with absolute paths
+calendar_agent = _load_agent("root_agent.sub_agents.calendar_agent.agent", "calendar_agent")
+flight_agent = _load_agent("root_agent.sub_agents.flight_agent.agent", "flight_agent")
+commute_agent = _load_agent("root_agent.sub_agents.commute_agent.agent", "commute_agent")
+planner_agent = _load_agent("root_agent.sub_agents.planner_agent.agent", "planner_agent")
+notification_agent = _load_agent("root_agent.sub_agents.notification_agent.agent", "notification_agent")
+critic_agent = _load_agent("root_agent.sub_agents.critic_agent.agent", "critic_agent")
+email_agent = _load_agent("root_agent.sub_agents.email_agent.agent", "email_agent")
+focus_agent = _load_agent("root_agent.sub_agents.focus_agent.agent", "focus_agent")
+knowledge_agent = _load_agent("root_agent.sub_agents.knowledge_agent.agent", "knowledge_agent")
+memory_agent = _load_agent("root_agent.sub_agents.memory_agent.agent", "memory_agent")
+wellness_agent = _load_agent("root_agent.sub_agents.wellness_agent.agent", "wellness_agent")
 
 # Filter out None values (agents that failed to load)
 available_agents = {
