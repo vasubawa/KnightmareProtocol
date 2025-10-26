@@ -305,7 +305,7 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
             className="h-full"
             labels={{
               title: "Chat Assistant",
-              initial: "👋 Hi! I can help you manage proverbs, change themes, and more.\n\nTry:\n- \"Set the theme to orange\"\n- \"Write a proverb about AI\"\n- \"Get the weather in SF\""
+              initial: "👋 Hi! I can help you plan you trip and schedule email as reminders."
             }}
           />
         </div>

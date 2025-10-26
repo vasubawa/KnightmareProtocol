@@ -1,29 +1,63 @@
 # Knight Hacks OPS Agents
 
-A Google ADK multi-agent workspace that demonstrates how a coordinated set of productivity agents (travel, scheduling, focus, etc.) can serve a program manager. Every agent exposes a `root_agent` entry point for the ADK CLI/UI and falls back gracefully when optional third-party SDKs are missing.
+A Next.js web application powered by **Google ADK (Agent Development Kit)** and **CopilotKit** that demonstrates how a coordinated set of AI productivity agents can assist with travel planning, scheduling, focus management, and more. The project features a modern React frontend integrated with multiple specialized Python agents running on Google's Gemini models.
 
-## Repository Layout
+## 🚀 Features
+
+- **Interactive Web UI**: Built with Next.js 15, React 19, and CopilotKit for seamless AI chat interactions
+- **Multi-Agent Architecture**: Specialized agents for different productivity domains
+- **Graceful Fallbacks**: Agents work with or without third-party API keys
+- **Real-time Integration**: Live data from Google Maps, Amadeus flights, and more
+- **Developer Tools**: Built-in linting, testing, and documentation agents for development workflow
+
+## 📁 Project Structure
 
 ```
-├── my_agent/              # Simple Q&A assistant (starter template)
-├── planner_agent/         # Builds itineraries and reconciles schedules
-├── calendar_agent/        # Tracks calendar events and detects conflicts
-├── flight_agent/          # Calls Amadeus for live fares with dummy fallback
-├── commute_agent/         # Uses Google Maps Distance Matrix when available
-├── notification_agent/    # Surfaces alerts and reminders
-├── email_agent/           # Drafts status updates and responses
-├── focus_agent/           # Manages deep-work blocks and nudges
-├── critic_agent/          # QA gatekeeper that reviews other agents
-├── memory_agent/          # Consolidates long-term memory signals
-├── attraction_agent/      # Suggests local activities for upcoming trips
-├── wellness_agent/        # Recommends rest and wellness actions
-├── knowledge_agent/       # Answers background questions from context
-├── notification_agent/    # Notification routing (event-driven)
-├── main.py                # Legacy orchestrator demo (optional)
+├── src/                        # Next.js frontend application
+│   ├── app/                   # Next.js app router pages
+│   │   ├── api/              # API routes (CopilotKit integration)
+│   │   ├── page.tsx          # Main chat interface
+│   │   └── layout.tsx        # Root layout
+│   └── ...
+├── agent/                      # Python agent backend
+│   ├── agent.py              # Main agent orchestrator
+│   ├── requirements.txt      # Python dependencies
+│   └── root_agent/           # Root agent implementation
+│       ├── dev_agent/        # Development workflow agents
+│       │   ├── doc_agent/   # Documentation generator
+│       │   ├── linter_agent/# Code quality checker
+│       │   └── testing_agent/# Test automation
+│       └── sub_agents/       # Domain-specific agents
+│           ├── calendar_agent/    # Calendar & scheduling
+│           ├── commute_agent/     # Travel time estimates
+│           ├── critic_agent/      # Quality assurance
+│           ├── email_agent/       # Email drafting
+│           ├── flight_agent/      # Flight search (Amadeus)
+│           ├── focus_agent/       # Deep work management
+│           ├── knowledge_agent/   # Q&A and context
+│           ├── memory_agent/      # Long-term memory
+│           ├── notification_agent/# Alert management
+│           ├── planner_agent/     # Itinerary planning
+│           └── wellness_agent/    # Health reminders
+├── scripts/                    # Setup and run scripts
+├── package.json               # Node.js dependencies
 └── README.md
 ```
 
-Each agent exports `root_agent` so that `adk web <agent_folder>` works out of the box. The shared `.env` at the repo root stores API keys consumed by every agent.
+## 🛠️ Tech Stack
+
+**Frontend:**
+- Next.js 15 with Turbopack
+- React 19
+- CopilotKit (AI chat integration)
+- TypeScript
+- Tailwind CSS 4
+
+**Backend:**
+- Python 3.10+
+- Google ADK (Agent Development Kit)
+- Google Gemini AI models
+- Optional: Google Maps API, Amadeus API
 
 ## Prerequisites
 
