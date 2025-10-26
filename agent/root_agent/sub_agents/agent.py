@@ -1,64 +1,108 @@
-# Assuming this is your main agent.py file at the root level
+"""
+Multi-Agent Orchestrator using Parallel and Sequential Agents
+This orchestrator coordinates all sub-agents in the personal assistant system.
+"""
 
-from google.adk.agents import ParallelAgent, SequentialAgent
+from importlib import import_module
 
-# --- Import ALL necessary subagents from your existing folders ---
-from sub_agents.calendar_agent import calendar_agent
-from sub_agents.flight_agent import flight_agent
-from sub_agents.commute_agent import commute_agent
-from sub_agents.planner_agent import planner_agent
-from sub_agents.notification_agent import notification_agent
-from sub_agents.critic_agent import critic_agent         # Added
-from sub_agents.email_agent import email_agent           # Added
-from sub_agents.focus_agent import focus_agent           # Added
-from sub_agents.knowledge_agent import knowledge_agent   # Added
-from sub_agents.memory_agent import memory_agent         # Added
-from sub_agents.test_agent import test_agent             # Added (Assuming this exists)
-from sub_agents.wellness_agent import wellness_agent     # Added
+# === Load ADK Agent Classes ===
+def _load_parallel_agent():
+    try:
+        return getattr(import_module("google.adk.agents"), "ParallelAgent")
+    except Exception:
+        class _ParallelAgent:
+            def __init__(self, **kwargs):
+                self.config = kwargs
+        return _ParallelAgent
 
-# --- 1. Define the Parallel Agent Step ---
+def _load_sequential_agent():
+    try:
+        return getattr(import_module("google.adk.agents"), "SequentialAgent")
+    except Exception:
+        class _SequentialAgent:
+            def __init__(self, **kwargs):
+                self.config = kwargs
+        return _SequentialAgent
+
+ParallelAgent = _load_parallel_agent()
+SequentialAgent = _load_sequential_agent()
+
+# === Import Sub-Agents ===
+def _load_agent(module_path: str, agent_name: str):
+    """Safely load an agent from a module."""
+    try:
+        module = import_module(module_path)
+        return getattr(module, agent_name)
+    except Exception as e:
+        print(f"Warning: Could not load {agent_name} from {module_path}: {e}")
+        return None
+
+# Load all sub-agents
+calendar_agent = _load_agent(".calendar_agent.agent", "calendar_agent")
+flight_agent = _load_agent(".flight_agent.agent", "flight_agent")
+commute_agent = _load_agent(".commute_agent.agent", "commute_agent")
+planner_agent = _load_agent(".planner_agent.agent", "planner_agent")
+notification_agent = _load_agent(".notification_agent.agent", "notification_agent")
+critic_agent = _load_agent(".critic_agent.agent", "critic_agent")
+email_agent = _load_agent(".email_agent.agent", "email_agent")
+focus_agent = _load_agent(".focus_agent.agent", "focus_agent")
+knowledge_agent = _load_agent(".knowledge_agent.agent", "knowledge_agent")
+memory_agent = _load_agent(".memory_agent.agent", "memory_agent")
+wellness_agent = _load_agent(".wellness_agent.agent", "wellness_agent")
+
+# Filter out None values (agents that failed to load)
+available_agents = {
+    "planner": planner_agent,
+    "calendar": calendar_agent,
+    "flight": flight_agent,
+    "commute": commute_agent,
+    "notification": notification_agent,
+    "critic": critic_agent,
+    "email": email_agent,
+    "focus": focus_agent,
+    "knowledge": knowledge_agent,
+    "memory": memory_agent,
+    "wellness": wellness_agent,
+}
+
+# Remove None entries
+available_agents = {k: v for k, v in available_agents.items() if v is not None}
+
+# === 1. Define the Parallel Agent Step ===
 # This runs the planning agents concurrently
-personal_assistant_planners = ParallelAgent(
-    name="personal_assistant_parallel_planner",
-    sub_agents=[
-        planner_agent,
-        calendar_agent,
-        flight_agent,
-        commute_agent
-        ],
-    description="Gathers trip planning information (itinerary, schedule, flights, commute) in parallel."
-)
+parallel_planners = []
+for name in ["planner", "calendar", "flight", "commute"]:
+    if name in available_agents:
+        parallel_planners.append(available_agents[name])
 
-# --- 2. Define the Sequential Pipeline (This IS the Root Agent) ---
-# Step 1: Run the planners in parallel
-# Step 2: Run the notification agent
-# Step 3 onwards: Run the rest of the agents sequentially
-root_agent = SequentialAgent(
-    name="full_personal_assistant_workflow", # Updated name for clarity
-    sub_agents=[
-        personal_assistant_planners, # Step 1: Gather info concurrently
-        notification_agent,        # Step 2: Send initial notification
-        critic_agent,              # Step 3: Critique the plan?
-        email_agent,               # Step 4: Email the plan?
-        focus_agent,               # Step 5: Set focus reminders?
-        knowledge_agent,           # Step 6: Consult knowledge base?
-        memory_agent,              # Step 7: Save to memory?
-        # test_agent,              # Step 8: (Include if you have a specific test step)
-        wellness_agent             # Step 9: Add wellness suggestions?
-    ],
-    description="Orchestrates the full Personal Assistant workflow: plans in parallel, notifies, then processes sequentially through critique, email, focus, knowledge, memory, and wellness steps."
-)
+if parallel_planners:
+    personal_assistant_planners = ParallelAgent(
+        name="personal_assistant_parallel_planner",
+        sub_agents=parallel_planners,
+        description="Gathers trip planning information (itinerary, schedule, flights, commute) in parallel."
+    )
+else:
+    personal_assistant_planners = None
 
-# --- IMPORTANT ---
-# Each agent in the sequence needs appropriate instructions.
-# - notification_agent: Needs instructions on what to notify about initially.
-# - critic_agent: Needs instructions on what to critique (e.g., the plan generated).
-# - email_agent: Needs instructions on what to email and to whom.
-# - focus_agent: Needs instructions on what reminders to set based on the plan.
-# - knowledge_agent: Needs instructions on what information to look up or cross-reference.
-# - memory_agent: Needs instructions on what details of the plan to save.
-# - wellness_agent: Needs instructions on how to add wellness tips related to the plan.
-#
-# Remember that each agent in the sequence will receive the state,
-# including outputs from all previous steps. Update their individual
-# 'instruction' parameters accordingly.
+# === 2. Define the Sequential Pipeline ===
+# Build sequential agent list
+sequential_agents = []
+if personal_assistant_planners:
+    sequential_agents.append(personal_assistant_planners)
+
+# Add remaining agents in order
+for name in ["notification", "critic", "email", "focus", "knowledge", "memory", "wellness"]:
+    if name in available_agents:
+        sequential_agents.append(available_agents[name])
+
+# Create the root orchestrator agent
+if sequential_agents:
+    root_agent = SequentialAgent(
+        name="full_personal_assistant_workflow",
+        sub_agents=sequential_agents,
+        description="Orchestrates the full Personal Assistant workflow: plans in parallel, notifies, then processes sequentially through critique, email, focus, knowledge, memory, and wellness steps."
+    )
+else:
+    # Fallback if no agents loaded
+    print("Warning: No agents loaded for orchestrator!")
+    root_agent = None

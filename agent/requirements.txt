@@ -5,3 +5,5 @@ pydantic
 google-adk
 google-genai
 ag-ui-adk
+requests
+wikipedia

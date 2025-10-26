@@ -47,14 +47,22 @@ AgentTool = _load_agent_tool()
 
 
 # === Import Sub Agents ===
-def _load_sub_agent(module_path: str):
-    return getattr(import_module(module_path), "root_agent")
+def _load_sub_agent(module_path: str, agent_name: str = "root_agent"):
+    """Load a sub-agent from a module path."""
+    try:
+        module = import_module(module_path)
+        # Try to get the specific agent first (e.g., planner_agent), fallback to root_agent
+        return getattr(module, agent_name, None) or getattr(module, "root_agent")
+    except Exception as e:
+        print(f"Warning: Failed to load agent from {module_path}: {e}")
+        return None
 
-planner_agent = _load_sub_agent("agents.planner_agent.agent")
-flight_agent = _load_sub_agent("agents.flight_agent.agent")
-commute_agent = _load_sub_agent("agents.commute_agent.agent")
-calendar_agent = _load_sub_agent("agents.calendar_agent.agent")
-critic_agent = _load_sub_agent("agents.critic_agent.agent")
+# Load sub-agents with correct relative paths
+planner_agent = _load_sub_agent("root_agent.sub_agents.planner_agent.agent", "planner_agent")
+flight_agent = _load_sub_agent("root_agent.sub_agents.flight_agent.agent", "flight_agent")
+commute_agent = _load_sub_agent("root_agent.sub_agents.commute_agent.agent", "commute_agent")
+calendar_agent = _load_sub_agent("root_agent.sub_agents.calendar_agent.agent", "calendar_agent")
+critic_agent = _load_sub_agent("root_agent.sub_agents.critic_agent.agent", "critic_agent")
 
 
 # === Tool: Workflow Runner ===

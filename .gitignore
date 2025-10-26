@@ -53,6 +53,7 @@ agent/venv/
 agent/__pycache__/
 agent/.venv/
 agent/.env
+__pycache__
 NATIVEagent
 attraction_agent - Copy
 ARCHIVEEEEEEEE
