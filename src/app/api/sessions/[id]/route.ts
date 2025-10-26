@@ -7,9 +7,10 @@ const SESSIONS_DIR = path.join(process.cwd(), 'data', 'sessions');
 // GET - Get specific session
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params;
     const filePath = path.join(SESSIONS_DIR, `${params.id}.json`);
     const content = await fs.readFile(filePath, 'utf-8');
     return NextResponse.json(JSON.parse(content));
@@ -22,9 +23,10 @@ export async function GET(
 // PUT - Update session
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params;
     const session = await request.json();
     const filePath = path.join(SESSIONS_DIR, `${params.id}.json`);
     await fs.writeFile(filePath, JSON.stringify(session, null, 2));
@@ -38,9 +40,10 @@ export async function PUT(
 // DELETE - Delete session
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params;
     const filePath = path.join(SESSIONS_DIR, `${params.id}.json`);
     await fs.unlink(filePath);
     return NextResponse.json({ success: true });

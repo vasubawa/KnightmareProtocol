@@ -53,7 +53,6 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
 
   // Get chat context
   const chatContext = useCopilotChat();
-  const chatMessages = chatContext.visibleMessages || [];
 
   // Session management state
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -92,6 +91,8 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
 
   // Save current chat messages to the active session
   useEffect(() => {
+    const chatMessages = chatContext.visibleMessages || [];
+    
     if (chatMessages.length > 0 && currentSessionId) {
       const updateSession = async () => {
         const updatedSessions = sessions.map(session => {
@@ -134,7 +135,7 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
       
       updateSession();
     }
-  }, [chatMessages, currentSessionId, sessions]);
+  }, [chatContext.visibleMessages, currentSessionId, sessions]);
 
   // Create new session
   const createNewSession = async () => {
