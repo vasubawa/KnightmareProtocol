@@ -22,3 +22,115 @@ body,
 html {
   height: 100%;
 }
+
+/* Custom chat styling - Enhanced with rounded corners and better glass effect */
+.copilotKitChat {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 1.5rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  overflow: hidden !important;
+}
+
+.copilotKitMessages {
+  background: transparent !important;
+  padding: 1rem !important;
+}
+
+.copilotKitInput {
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 1rem !important;
+  padding: 0.75rem 1rem !important;
+  color: white !important;
+}
+
+.copilotKitInput::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.copilotKitInput:focus {
+  border-color: var(--copilot-kit-primary-color, #6366f1) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+  outline: none !important;
+}
+
+.copilotKitButton {
+  background: var(--copilot-kit-primary-color, #6366f1) !important;
+  border-radius: 0.75rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.copilotKitButton:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important;
+}
+
+.copilotKitMessage {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 1rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  margin-bottom: 0.75rem !important;
+  padding: 1rem !important;
+}
+
+.copilotKitHeader {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 1.5rem 1.5rem 0 0 !important;
+}
+
+.copilotKitTitle {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Input container styling */
+.copilotKitInputContainer {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 1rem !important;
+  border-radius: 0 0 1.5rem 1.5rem !important;
+}
+
+/* Hide powered by text */
+.copilotKitPoweredBy,
+p.poweredBy[style*="text-align: center"],
+p[class="poweredBy"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Hide feedback buttons (upvote/downvote/refetch) */
+.copilotKitFeedback,
+.copilotKitMessageActions,
+.copilotKitRefetch,
+.copilotKitMessageControls,
+.copilotKitMessageControlButton {
+  display: none !important;
+}
+
+/* Better message text styling */
+.copilotKitMarkdown {
+  color: white !important;
+}
+
+.copilotKitMarkdown p {
+  margin: 0.5rem 0 !important;
+  line-height: 1.6 !important;
+}
+
+.copilotKitMarkdown ul {
+  margin: 0.5rem 0 !important;
+  padding-left: 1.5rem !important;
+}
+
+.copilotKitMarkdown li {
+  margin: 0.25rem 0 !important;
+}

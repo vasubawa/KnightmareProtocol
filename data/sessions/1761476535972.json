@@ -1,0 +1,49 @@
+{
+  "id": "1761476535972",
+  "title": "Hello",
+  "timestamp": 1761476536069,
+  "messages": [
+    {
+      "id": "ck-e83dc194-bf40-40e5-9f4b-b79a4a1b8d5e",
+      "content": "Hello",
+      "role": "user",
+      "status": {
+        "code": "Success"
+      },
+      "createdAt": "2025-10-26T11:02:13.778Z",
+      "type": "TextMessage"
+    },
+    {
+      "id": "df2987bb-1bd1-42a1-9cfa-62a6a9b7784f",
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?",
+      "parentMessageId": null,
+      "createdAt": "2025-10-26T11:02:15.185Z",
+      "status": {
+        "code": "Success",
+        "__typename": "SuccessMessageStatus"
+      },
+      "type": "TextMessage"
+    },
+    {
+      "id": "ck-857ae917-e52d-4019-b20d-9db0cfaf75a4",
+      "threadId": "08ee8e49-bd38-4bcc-81db-e14e6efacda0",
+      "role": "assistant",
+      "agentName": "my_agent",
+      "nodeName": "",
+      "runId": "4d511f56-4e50-4c53-a9b5-b6747b49d139",
+      "active": false,
+      "running": true,
+      "state": {
+        "proverbs": [
+          "CopilotKit may be new, but its the best thing since sliced bread."
+        ]
+      },
+      "createdAt": "2025-10-26T11:02:15.185Z",
+      "status": {
+        "code": "Success"
+      },
+      "type": "AgentStateMessage"
+    }
+  ]
+}
