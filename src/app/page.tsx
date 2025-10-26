@@ -60,30 +60,29 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
 
   // Load sessions from localStorage on mount
   useEffect(() => {
-    const loadSessions = async () => {
+    const loadSessions = () => {
       try {
-        const response = await fetch('/api/sessions');
-        const data = await response.json();
-        setSessions(data);
-        if (data.length > 0) {
-          setCurrentSessionId(data[0].id);
+        const stored = localStorage.getItem('chatSessions');
+        if (stored) {
+          const data = JSON.parse(stored);
+          setSessions(data);
+          if (data.length > 0) {
+            setCurrentSessionId(data[0].id);
+          }
+        } else {
+          // Create initial session
+          const newSession: ChatSession = {
+            id: Date.now().toString(),
+            title: "New Session",
+            timestamp: Date.now(),
+            messages: []
+          };
+          setSessions([newSession]);
+          setCurrentSessionId(newSession.id);
+          localStorage.setItem('chatSessions', JSON.stringify([newSession]));
         }
       } catch (error) {
         console.error('Failed to load sessions:', error);
-        // Fallback to creating initial session
-        const newSession: ChatSession = {
-          id: Date.now().toString(),
-          title: "New Session",
-          timestamp: Date.now(),
-          messages: []
-        };
-        setSessions([newSession]);
-        setCurrentSessionId(newSession.id);
-        await fetch('/api/sessions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newSession)
-        });
       }
     };
     loadSessions();
@@ -94,53 +93,42 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
     const chatMessages = chatContext.visibleMessages || [];
     
     if (chatMessages.length > 0 && currentSessionId) {
-      const updateSession = async () => {
-        setSessions(prevSessions => {
-          const updatedSessions = prevSessions.map(session => {
-            if (session.id === currentSessionId) {
-              // Generate a title from the first user message
-              const firstUserMsg = chatMessages.find((m) => {
-                return (m as unknown as Record<string, unknown>).role === 'user';
-              });
-              
-              let title = 'Chat Session';
-              if (firstUserMsg) {
-                const content = (firstUserMsg as unknown as Record<string, unknown>).content;
-                if (typeof content === 'string') {
-                  title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
-                }
+      setSessions(prevSessions => {
+        const updatedSessions = prevSessions.map(session => {
+          if (session.id === currentSessionId) {
+            // Generate a title from the first user message
+            const firstUserMsg = chatMessages.find((m) => {
+              return (m as unknown as Record<string, unknown>).role === 'user';
+            });
+            
+            let title = 'Chat Session';
+            if (firstUserMsg) {
+              const content = (firstUserMsg as unknown as Record<string, unknown>).content;
+              if (typeof content === 'string') {
+                title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
               }
-              
-              return {
-                ...session,
-                messages: chatMessages,
-                title,
-                timestamp: Date.now()
-              };
             }
-            return session;
-          });
-          
-          // Save to server
-          const currentSession = updatedSessions.find(s => s.id === currentSessionId);
-          if (currentSession) {
-            fetch(`/api/sessions/${currentSessionId}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(currentSession)
-            }).catch(err => console.error('Failed to save session:', err));
+            
+            return {
+              ...session,
+              messages: chatMessages,
+              title,
+              timestamp: Date.now()
+            };
           }
-          
-          return updatedSessions;
+          return session;
         });
-      };
-      
-      updateSession();
+        
+        // Save to localStorage
+        localStorage.setItem('chatSessions', JSON.stringify(updatedSessions));
+        
+        return updatedSessions;
+      });
     }
   }, [chatContext.visibleMessages, currentSessionId]);
 
   // Create new session
-  const createNewSession = async () => {
+  const createNewSession = () => {
     const newSession: ChatSession = {
       id: Date.now().toString(),
       title: "New Session",
@@ -148,21 +136,10 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
       messages: []
     };
     
-    // Save to server first
-    try {
-      await fetch('/api/sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newSession)
-      });
-      
-      // Then update local state
-      const updated = [newSession, ...sessions];
-      setSessions(updated);
-      setCurrentSessionId(newSession.id);
-    } catch (error) {
-      console.error('Failed to create session:', error);
-    }
+    const updated = [newSession, ...sessions];
+    setSessions(updated);
+    setCurrentSessionId(newSession.id);
+    localStorage.setItem('chatSessions', JSON.stringify(updated));
   };
 
   // Switch to a different session
@@ -171,14 +148,10 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
   };
 
   // Delete a session
-  const deleteSession = async (sessionId: string) => {
+  const deleteSession = (sessionId: string) => {
     const updated = sessions.filter(s => s.id !== sessionId);
     setSessions(updated);
-    
-    // Delete from server
-    await fetch(`/api/sessions/${sessionId}`, {
-      method: 'DELETE'
-    });
+    localStorage.setItem('chatSessions', JSON.stringify(updated));
     
     if (currentSessionId === sessionId && updated.length > 0) {
       setCurrentSessionId(updated[0].id);
