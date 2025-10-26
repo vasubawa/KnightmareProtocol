@@ -14,8 +14,8 @@ const serviceAdapter = new ExperimentalEmptyAdapter();
 //    to setup the connection with the ADK agent.
 const runtime = new CopilotRuntime({
   agents: {
-    // Our FastAPI endpoint URL
-    "my_agent": new HttpAgent({url: "http://localhost:8000/"}),
+    // Our FastAPI endpoint URL - deployed on Render
+    "my_agent": new HttpAgent({url: "https://aiagentic.onrender.com/"}),
   }   
 });
  
