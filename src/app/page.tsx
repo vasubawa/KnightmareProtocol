@@ -37,7 +37,7 @@ type ChatSession = {
   id: string;
   title: string;
   timestamp: number;
-  messages: any[];
+  messages: unknown[];
 }
 
 function YourMainContent({ themeColor }: { themeColor: string }) {
@@ -97,12 +97,17 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
         const updatedSessions = sessions.map(session => {
           if (session.id === currentSessionId) {
             // Generate a title from the first user message
-            const firstUserMsg = chatMessages.find((m: any) => m.role === 'user');
-            const title = firstUserMsg 
-              ? (typeof (firstUserMsg as any).content === 'string' 
-                  ? ((firstUserMsg as any).content.substring(0, 30) + ((firstUserMsg as any).content.length > 30 ? '...' : ''))
-                  : 'Chat Session')
-              : 'Chat Session';
+            const firstUserMsg = chatMessages.find((m) => {
+              return (m as unknown as Record<string, unknown>).role === 'user';
+            });
+            
+            let title = 'Chat Session';
+            if (firstUserMsg) {
+              const content = (firstUserMsg as unknown as Record<string, unknown>).content;
+              if (typeof content === 'string') {
+                title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
+              }
+            }
             
             return {
               ...session,
@@ -129,7 +134,7 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
       
       updateSession();
     }
-  }, [chatMessages, currentSessionId]);
+  }, [chatMessages, currentSessionId, sessions]);
 
   // Create new session
   const createNewSession = async () => {
