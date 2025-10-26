@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: attraction-agent
+    env: python
+    region: oregon
+    buildCommand: cd agent && pip install -r requirements.txt
+    startCommand: cd agent && python agent.py
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: 8000
