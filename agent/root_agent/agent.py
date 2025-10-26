@@ -63,6 +63,12 @@ flight_agent = _load_sub_agent("root_agent.sub_agents.flight_agent.agent", "flig
 commute_agent = _load_sub_agent("root_agent.sub_agents.commute_agent.agent", "commute_agent")
 calendar_agent = _load_sub_agent("root_agent.sub_agents.calendar_agent.agent", "calendar_agent")
 critic_agent = _load_sub_agent("root_agent.sub_agents.critic_agent.agent", "critic_agent")
+email_agent = _load_sub_agent("root_agent.sub_agents.email_agent.agent", "email_agent")
+knowledge_agent = _load_sub_agent("root_agent.sub_agents.knowledge_agent.agent", "knowledge_agent")
+memory_agent = _load_sub_agent("root_agent.sub_agents.memory_agent.agent", "memory_agent")
+notification_agent = _load_sub_agent("root_agent.sub_agents.notification_agent.agent", "notification_agent")
+focus_agent = _load_sub_agent("root_agent.sub_agents.focus_agent.agent", "focus_agent")
+wellness_agent = _load_sub_agent("root_agent.sub_agents.wellness_agent.agent", "wellness_agent")
 
 
 # === Tool: Workflow Runner ===
@@ -109,16 +115,47 @@ async def run_ops(request: str):
 root_agent = Agent(
     model="gemini-2.5-flash",
     name="personal_assistant",
-    description="The root orchestrator that manages all sub-agents for trip planning.",
-    instruction="""Coordinate multiple sub-agents to handle trip planning, flight booking,
-    commute calculations, calendar syncing, and conflict checking.
-    Always summarize results clearly for the user.""",
+    description="The root orchestrator that manages all sub-agents for comprehensive personal assistance including trip planning, emails, knowledge queries, notifications, memory, and wellness.",
+    instruction="""You are a comprehensive personal assistant with access to multiple specialized agents.
+    
+    Available agents and their capabilities:
+    - planner_agent: Create itineraries and schedules
+    - flight_agent: Search for flights
+    - commute_agent: Calculate travel times and routes
+    - calendar_agent: Manage schedules
+    - email_agent: Send emails (use this when user asks to send emails)
+    - knowledge_agent: Search Wikipedia for information
+    - memory_agent: Store and retrieve user preferences
+    - notification_agent: Send notifications and reminders
+    - critic_agent: Validate and review plans
+    - focus_agent: Help with focus sessions
+    - wellness_agent: Provide wellness suggestions
+    
+    When the user asks you to do something:
+    1. Determine which agent(s) can help
+    2. Use the appropriate AgentTool to delegate the task
+    3. Combine results from multiple agents if needed
+    4. Provide a clear, helpful response
+    
+    Examples:
+    - "Send me an email with Orlando facts" → Use knowledge_agent to get facts, then email_agent to send
+    - "Call the calendar" → Use calendar_agent
+    - "Remember my preference" → Use memory_agent
+    - "Plan a trip" → Use planner_agent, flight_agent, commute_agent in sequence
+    
+    Always be proactive and use the right tools!""",
     tools=[
         AgentTool(agent=planner_agent),
         AgentTool(agent=flight_agent),
         AgentTool(agent=commute_agent),
         AgentTool(agent=calendar_agent),
         AgentTool(agent=critic_agent),
+        AgentTool(agent=email_agent),
+        AgentTool(agent=knowledge_agent),
+        AgentTool(agent=memory_agent),
+        AgentTool(agent=notification_agent),
+        AgentTool(agent=focus_agent),
+        AgentTool(agent=wellness_agent),
         run_ops,
     ],
 )

@@ -65,13 +65,23 @@ async def run_ops():
         await asyncio.sleep(3)
 
 
-root_agent = Agent(
-    model="gemini-2.5-flash",
-    name="attraction_agent",
-    description="Suggests nearby places, activities, and experiences.",
-    instruction="Curate personalized attraction ideas and align them with the current itinerary.",
-    tools=[run_ops],
-)
+# ============================================================================
+# Import the Root Agent with all sub-agents
+# ============================================================================
+try:
+    from root_agent.agent import root_agent as personal_assistant
+except ImportError:
+    # Fallback if import fails
+    personal_assistant = Agent(
+        model="gemini-2.5-flash",
+        name="personal_assistant",
+        description="Comprehensive personal assistant with email, knowledge, calendar, and more.",
+        instruction="You are a helpful personal assistant. Help users with various tasks.",
+        tools=[run_ops],
+    )
+
+# Keep attraction_agent for backward compatibility, but use personal_assistant by default
+root_agent = personal_assistant
 
 # ============================================================================
 # FastAPI Frontend Integration Layer
@@ -85,26 +95,20 @@ try:
     from ag_ui_adk import ADKAgent, add_adk_fastapi_endpoint
     from google.adk.agents import LlmAgent
     
-    # Create a wrapped version of the agent for frontend use
-    frontend_agent = LlmAgent(
-        name="attraction_agent",
-        model="gemini-2.5-flash",
-        description="Suggests nearby places, activities, and experiences.",
-        instruction="Curate personalized attraction ideas and align them with the current itinerary.",
-        tools=[run_ops],
-    )
+    # Use the imported root_agent (personal_assistant) with all sub-agents
+    frontend_agent = root_agent
     
     # Create ADK middleware agent instance
-    adk_attraction_agent = ADKAgent(
+    adk_agent = ADKAgent(
         adk_agent=frontend_agent,
-        app_name="agent",
+        app_name="personal_assistant",
         user_id="demo_user",
         session_timeout_seconds=3600,
         use_in_memory_services=True
     )
     
     # Create FastAPI app
-    app = FastAPI(title="ADK Middleware Attraction Agent")
+    app = FastAPI(title="Personal Assistant Agent with All Sub-Agents")
     
     # Add CORS middleware to allow requests from your Vercel frontend
     # Configure allowed origins based on environment
@@ -133,7 +137,7 @@ try:
     )
     
     # Add the ADK endpoint
-    add_adk_fastapi_endpoint(app, adk_attraction_agent, path="/")
+    add_adk_fastapi_endpoint(app, adk_agent, path="/")
     
 except ImportError:
     # FastAPI dependencies not available, agent can still work standalone
