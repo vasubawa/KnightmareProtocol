@@ -1,126 +1,86 @@
-# CopilotKit <> ADK Starter
+# Knight Hacks OPS Agents
 
-This is a starter template for building AI agents using Google's [ADK](https://google.github.io/adk-docs/) and [CopilotKit](https://copilotkit.ai). It provides a modern Next.js application with an integrated investment analyst agent that can research stocks, analyze market data, and provide investment insights.
+A Google ADK multi-agent workspace that demonstrates how a coordinated set of productivity agents (travel, scheduling, focus, etc.) can serve a program manager. Every agent exposes a `root_agent` entry point for the ADK CLI/UI and falls back gracefully when optional third-party SDKs are missing.
+
+## Repository Layout
+
+```
+├── my_agent/              # Simple Q&A assistant (starter template)
+├── planner_agent/         # Builds itineraries and reconciles schedules
+├── calendar_agent/        # Tracks calendar events and detects conflicts
+├── flight_agent/          # Calls Amadeus for live fares with dummy fallback
+├── commute_agent/         # Uses Google Maps Distance Matrix when available
+├── notification_agent/    # Surfaces alerts and reminders
+├── email_agent/           # Drafts status updates and responses
+├── focus_agent/           # Manages deep-work blocks and nudges
+├── critic_agent/          # QA gatekeeper that reviews other agents
+├── memory_agent/          # Consolidates long-term memory signals
+├── attraction_agent/      # Suggests local activities for upcoming trips
+├── wellness_agent/        # Recommends rest and wellness actions
+├── knowledge_agent/       # Answers background questions from context
+├── notification_agent/    # Notification routing (event-driven)
+├── main.py                # Legacy orchestrator demo (optional)
+└── README.md
+```
+
+Each agent exports `root_agent` so that `adk web <agent_folder>` works out of the box. The shared `.env` at the repo root stores API keys consumed by every agent.
 
 ## Prerequisites
 
-- Node.js 18+
-- Python 3.12+
-- Google Makersuite API Key (for the ADK agent) (see https://makersuite.google.com/app/apikey)
-- Any of the following package managers:
-  - pnpm (recommended)
-  - npm
-  - yarn
-  - bun
+- Python 3.10 or newer
+- Google ADK CLI (`pip install google-adk`)
+- Optional SDKs per agent:
+  - `python-dotenv` for automatic `.env` loading (otherwise we parse manually)
+  - `googlemaps` for `commute_agent`
+  - `amadeus` for `flight_agent`
 
-> **Note:** This repository ignores lock files (package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb) to avoid conflicts between different package managers. Each developer should generate their own lock file using their preferred package manager. After that, make sure to delete it from the .gitignore.
+Install missing packages inside your virtualenv, for example:
 
-## Getting Started
-
-1. Install dependencies using your preferred package manager:
 ```bash
-# Using pnpm (recommended)
-pnpm install
-
-# Using npm
-npm install
-
-# Using yarn
-yarn install
-
-# Using bun
-bun install
+pip install python-dotenv googlemaps amadeus
 ```
 
-2. Install Python dependencies for the ADK agent:
-```bash
-# Using pnpm
-pnpm install:agent
+## Environment Configuration
 
-# Using npm
-npm run install:agent
+Create `.env` at the repository root (already checked in for convenience) and populate the keys you have access to:
 
-# Using yarn
-yarn install:agent
-
-# Using bun
-bun run install:agent
+```
+GOOGLE_API_KEY=...          # Required for Gemini 2.5 Flash
+MAPS_PLACE_API_KEY=...      # Needed for live commute estimates (optional)
+AMADEUS_API_KEY=...
+AMADEUS_API_SECRET=...
 ```
 
-> **Note:** This will automatically setup a `.venv` (virtual environment) inside the `agent` directory.
->
-> To activate the virtual environment manually, you can run:
-> ```bash
-> source agent/.venv/bin/activate
-> ```
+All agent modules call `_ensure_env_loaded()` during import, so running the ADK CLI/W UI inherits these variables automatically. If you prefer exporting variables manually, `source .env` before launching the agents.
 
+## Running An Agent In The ADK Web UI
 
-3. Set up your Google API key:
 ```bash
-export GOOGLE_API_KEY="your-google-api-key-here"
+cd /Users/<you>/Dev/knight-hacks-25
+source .venv/bin/activate        # optional but recommended
+source .env                       # if you want to push vars into your shell
+adk web planner_agent             # replace with any other agent folder name
 ```
 
-4. Start the development server:
-```bash
-# Using pnpm
-pnpm dev
+Repeat the last command with `calendar_agent`, `flight_agent`, etc. The ADK UI will display the agent description, and every prompt you send is routed through that agent’s `run_ops` tool. For example:
 
-# Using npm
-npm run dev
+- `commute_agent`: ask “from New York to Boston” to trigger a Distance Matrix call or fallback guidance.
+- `flight_agent`: ask “Flight from MCO to DXB on 2025-12-01” to try the Amadeus API.
 
-# Using yarn
-yarn dev
+If the required SDK or API key is missing, the agent returns an informative fallback message instead of failing.
 
-# Using bun
-bun run dev
-```
+## Orchestrator Demo (Optional)
 
-This will start both the UI and agent servers concurrently.
-
-## Available Scripts
-The following scripts can also be run using your preferred package manager:
-- `dev` - Starts both UI and agent servers in development mode
-- `dev:debug` - Starts development servers with debug logging enabled
-- `dev:ui` - Starts only the Next.js UI server
-- `dev:agent` - Starts only the ADK agent server
-- `build` - Builds the Next.js application for production
-- `start` - Starts the production server
-- `lint` - Runs ESLint for code linting
-- `install:agent` - Installs Python dependencies for the agent
-
-## Documentation
-
-The main UI component is in `src/app/page.tsx`. You can:
-- Modify the theme colors and styling
-- Add new frontend actions
-- Customize the CopilotKit sidebar appearance
-
-## 📚 Documentation
-
-- [ADK Documentation](https://google.github.io/adk-docs/) - Learn more about the ADK and its features
-- [CopilotKit Documentation](https://docs.copilotkit.ai) - Explore CopilotKit's capabilities
-- [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API
-
-
-## Contributing
-
-Feel free to submit issues and enhancement requests! This starter is designed to be easily extensible.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+`main.py` shows the earlier orchestrated productivity simulation that wires multiple domain agents together. It depends on an `ops` package that lives outside this repository snapshot, so treat it as illustrative unless you restore those modules.
 
 ## Troubleshooting
 
-### Agent Connection Issues
-If you see "I'm having trouble connecting to my tools", make sure:
-1. The ADK agent is running on port 8000
-2. Your Google API key is set correctly
-3. Both servers started successfully
+- **Import "amadeus" could not be resolved**: install `amadeus` inside the same virtualenv you use for the ADK CLI.
+- **Google Maps quota or auth errors**: confirm `MAPS_PLACE_API_KEY` (or `GOOGLE_MAPS_API_KEY`) is present in `.env` and valid for Distance Matrix.
+- **Agent not shown in ADK web**: ensure the folder’s `__init__.py` re-exports `root_agent` (already configured) and that you invoke `adk web <folder>` from the repo root.
 
-### Python Dependencies
-If you encounter Python import errors:
-```bash
-cd agent
-pip install -r requirements.txt
-```
+## Next Steps
+
+- Add additional tools to each agent, e.g., calendar CRUD, email send, or focus analytics.
+- Wire the agents back into a shared orchestrator once their standalone behaviors are proven.
+- Capture integration secrets with a proper secrets manager instead of a plain `.env` file when moving toward production.
