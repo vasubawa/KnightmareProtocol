@@ -95,47 +95,49 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
     
     if (chatMessages.length > 0 && currentSessionId) {
       const updateSession = async () => {
-        const updatedSessions = sessions.map(session => {
-          if (session.id === currentSessionId) {
-            // Generate a title from the first user message
-            const firstUserMsg = chatMessages.find((m) => {
-              return (m as unknown as Record<string, unknown>).role === 'user';
-            });
-            
-            let title = 'Chat Session';
-            if (firstUserMsg) {
-              const content = (firstUserMsg as unknown as Record<string, unknown>).content;
-              if (typeof content === 'string') {
-                title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
+        setSessions(prevSessions => {
+          const updatedSessions = prevSessions.map(session => {
+            if (session.id === currentSessionId) {
+              // Generate a title from the first user message
+              const firstUserMsg = chatMessages.find((m) => {
+                return (m as unknown as Record<string, unknown>).role === 'user';
+              });
+              
+              let title = 'Chat Session';
+              if (firstUserMsg) {
+                const content = (firstUserMsg as unknown as Record<string, unknown>).content;
+                if (typeof content === 'string') {
+                  title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
+                }
               }
+              
+              return {
+                ...session,
+                messages: chatMessages,
+                title,
+                timestamp: Date.now()
+              };
             }
-            
-            return {
-              ...session,
-              messages: chatMessages,
-              title,
-              timestamp: Date.now()
-            };
-          }
-          return session;
-        });
-        
-        setSessions(updatedSessions);
-        
-        // Save to server
-        const currentSession = updatedSessions.find(s => s.id === currentSessionId);
-        if (currentSession) {
-          await fetch(`/api/sessions/${currentSessionId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(currentSession)
+            return session;
           });
-        }
+          
+          // Save to server
+          const currentSession = updatedSessions.find(s => s.id === currentSessionId);
+          if (currentSession) {
+            fetch(`/api/sessions/${currentSessionId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(currentSession)
+            }).catch(err => console.error('Failed to save session:', err));
+          }
+          
+          return updatedSessions;
+        });
       };
       
       updateSession();
     }
-  }, [chatContext.visibleMessages, currentSessionId, sessions]);
+  }, [chatContext.visibleMessages, currentSessionId]);
 
   // Create new session
   const createNewSession = async () => {
